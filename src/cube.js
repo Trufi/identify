@@ -2,11 +2,11 @@ import { mat4 } from 'gl-matrix';
 
 const key = ({x, y, z}) => `${x}_${y}_${z}`;
 
-export const BYTES_PER_VERTEX = 11 * 4;
+export const BYTES_PER_VERTEX = 12 * 4;
 export const VERTICES_PER_CUBE = 36;
 
 export default class Cube {
-    constructor(position) {
+    constructor(position, shift) {
         this.position = position;
         this.size = [1, 1, 1];
         this.color = [1, 0, 0, 1];
@@ -16,6 +16,7 @@ export default class Cube {
             yz: [0, 0, 1, 1]
         };
         this.uniqColor = [1, 1, 1, 1];
+        this.shift = shift;
         this.buffer = this._generateBuffer();
     }
 
@@ -67,10 +68,11 @@ export default class Cube {
         return [
             (x + this.position[0]) * this.size[0],
             (y + this.position[1]) * this.size[1],
-            (z + this.position[2]) * this.size[2]
+            (z + this.position[2]) * this.size[2],
         ].concat(
             faceColor,
-            this.uniqColor
+            this.uniqColor,
+            this.shift,
         );
     }
 }
