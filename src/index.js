@@ -45,27 +45,53 @@ gl.attachShader(program, fragmentShader);
 gl.linkProgram(program);
 
 // Получим местоположение переменных в программе шейдеров
-var uCamera = gl.getUniformLocation(program, 'u_camera');
-var aPosition = gl.getAttribLocation(program, 'a_position');
-var aColor = gl.getAttribLocation(program, 'a_color');
+const uCamera = gl.getUniformLocation(program, 'u_camera');
+const aPosition = gl.getAttribLocation(program, 'a_position');
+const aColor = gl.getAttribLocation(program, 'a_color');
 
-var cameraMatrix = mat4.create();
+const cameraMatrix = mat4.create();
 mat4.perspective(cameraMatrix, 45, window.innerWidth / window.innerHeight, 0.1, 1000);
-mat4.translate(cameraMatrix, cameraMatrix, [0, 0, -5]);
+const lookAtMatrix = mat4.create();
 
-const cube = new Cube();
+const zoom = 50;
+mat4.lookAt(lookAtMatrix, [-zoom, -zoom, zoom], [0, 0, 0], [0, 0, 1]);
+mat4.mul(cameraMatrix, cameraMatrix, lookAtMatrix);
 
-var glBuffer = gl.createBuffer();
+const k = 20;
+const padding = 5;
+const middle = k / 2;
+const cubes = [];
+for (let i = 0; i < k; i++) {
+    for (let j = 0; j < k; j++) {
+        const cube = new Cube([
+            (i - middle) * (1 + padding),
+            (j - middle) * (1 + padding),
+            0
+        ]);
+        cubes.push(cube);
+    }
+}
+
+function batching(cubes) {
+    const BYTES_PER_CUBE = 11 * 4 * 36;
+    const array = new Uint8Array(BYTES_PER_CUBE * cubes.length);
+    cubes.forEach((cube, i) => {
+        array.set(new Uint8Array(cube.buffer), i * BYTES_PER_CUBE);
+    });
+    return array.buffer;
+}
+
+const glBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, glBuffer);
-gl.bufferData(gl.ARRAY_BUFFER, cube.buffer, gl.STATIC_DRAW);
+gl.bufferData(gl.ARRAY_BUFFER, batching(cubes), gl.STATIC_DRAW);
 
 function render() {
     // Запрашиваем рендеринг на следующий кадр
     requestAnimationFrame(render);
 
     // Получаем время прошедшее с прошлого кадра
-    var time = Date.now();
-    // var dt = lastRenderTime - time;
+    const time = Date.now();
+    // const dt = lastRenderTime - time;
 
     // Очищаем сцену, закрашивая её в белый цвет
     gl.clearColor(1.0, 1.0, 1.0, 1.0);
@@ -86,7 +112,7 @@ function render() {
 
     gl.uniformMatrix4fv(uCamera, false, cameraMatrix);
 
-    gl.drawArrays(gl.TRIANGLES, 0, 36);
+    gl.drawArrays(gl.TRIANGLES, 0, 36 * cubes.length);
 
     // lastRenderTime = time;
 }

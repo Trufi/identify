@@ -3,31 +3,27 @@ import { mat4 } from 'gl-matrix';
 const key = ({x, y, z}) => `${x}_${y}_${z}`;
 
 export default class Cube {
-    constructor() {
-        this.position = [0, 0, 0];
+    constructor(position) {
+        this.position = position;
         this.size = [1, 1, 1];
         this.color = [1, 0, 0, 1];
+        this.faceColors = {
+            xy: [1, 0, 0, 1],
+            xz: [0, 1, 0, 1],
+            yz: [0, 0, 1, 1]
+        };
         this.uniqColor = [1, 1, 1, 1];
         this.buffer = this._generateBuffer();
     }
 
     _generateBuffer() {
-        const vertices = {};
-        for (let x = -1; x <= 1; x++) {
-            for (let y = -1; y <= 1; y++) {
-                for (let z = -1; z <= 1; z++) {
-                    vertices[key({x, y, z})] = this._generateVertex(x, y, z);
-                }
-            }
-        }
-
         const faces = [
-            this._generateFace(-1, 'x', 'y', vertices),
-            this._generateFace(1, 'x', 'y', vertices),
-            this._generateFace(-1, 'x', 'z', vertices),
-            this._generateFace(1, 'x', 'z', vertices),
-            this._generateFace(-1, 'y', 'z', vertices),
-            this._generateFace(1, 'y', 'z', vertices)
+            this._generateFace(-1, 'x', 'y'),
+            this._generateFace(1, 'x', 'y'),
+            this._generateFace(-1, 'x', 'z'),
+            this._generateFace(1, 'x', 'z'),
+            this._generateFace(-1, 'y', 'z'),
+            this._generateFace(1, 'y', 'z'),
         ];
 
         const orderedVertices = faces.reduce((prev, current) => prev.concat(current), []);
@@ -36,8 +32,7 @@ export default class Cube {
         return typedArray.buffer;
     }
 
-    //           -1  0  0
-    _generateFace(val, a, b, vertices) {
+    _generateFace(val, a, b) {
         const v = {
             x: val,
             y: val,
@@ -60,18 +55,18 @@ export default class Cube {
         return twoTriangles.map(([va, vb]) => {
             v[a] = va;
             v[b] = vb;
-            
-            return vertices[key(v)]
+
+            return this._generateVertex(v, this.faceColors[a + b]);
         });
     }
 
-    _generateVertex(x, y, z) {
+    _generateVertex({x, y, z}, faceColor) {
         return [
-            x * this.size[0],
-            y * this.size[1],
-            z * this.size[2]
+            (x + this.position[0]) * this.size[0],
+            (y + this.position[1]) * this.size[1],
+            (z + this.position[2]) * this.size[2]
         ].concat(
-            this.color,
+            faceColor,
             this.uniqColor
         );
     }
