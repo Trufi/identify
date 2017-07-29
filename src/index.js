@@ -1,5 +1,5 @@
 import { mat4 } from 'gl-matrix';
-import Cube from './cube';
+import Cube, { BYTES_PER_VERTEX, VERTICES_PER_CUBE } from './cube';
 
 const vertexShaderCode = `
     attribute vec3 a_position;
@@ -73,10 +73,9 @@ for (let i = 0; i < k; i++) {
 }
 
 function batching(cubes) {
-    const BYTES_PER_CUBE = 11 * 4 * 36;
-    const array = new Uint8Array(BYTES_PER_CUBE * cubes.length);
+    const array = new Uint8Array(BYTES_PER_VERTEX * VERTICES_PER_CUBE * cubes.length);
     cubes.forEach((cube, i) => {
-        array.set(new Uint8Array(cube.buffer), i * BYTES_PER_CUBE);
+        array.set(new Uint8Array(cube.buffer), i * BYTES_PER_VERTEX * VERTICES_PER_CUBE);
     });
     return array.buffer;
 }
@@ -104,15 +103,15 @@ function render() {
 
     gl.bindBuffer(gl.ARRAY_BUFFER, glBuffer);
     gl.enableVertexAttribArray(aPosition);
-    gl.vertexAttribPointer(aPosition, 3, gl.FLOAT, false, 11 * 4, 0);
+    gl.vertexAttribPointer(aPosition, 3, gl.FLOAT, false, BYTES_PER_VERTEX, 0);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, glBuffer);
     gl.enableVertexAttribArray(aColor);
-    gl.vertexAttribPointer(aColor, 4, gl.FLOAT, false, 11 * 4, 3 * 4);
+    gl.vertexAttribPointer(aColor, 4, gl.FLOAT, false, BYTES_PER_VERTEX, 3 * 4);
 
     gl.uniformMatrix4fv(uCamera, false, cameraMatrix);
 
-    gl.drawArrays(gl.TRIANGLES, 0, 36 * cubes.length);
+    gl.drawArrays(gl.TRIANGLES, 0, VERTICES_PER_CUBE * cubes.length);
 
     // lastRenderTime = time;
 }
