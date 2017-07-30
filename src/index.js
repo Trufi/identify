@@ -27,7 +27,7 @@ const vertexShaderCode = `
     varying vec3 v_color;
     void main(void) {
         v_color = a_color;
-        gl_Position = u_camera * vec4(a_position.xy, a_position.z + sin((a_shift + u_time / 50.) / 3.0) * 3.0, 1.0);
+        gl_Position = u_camera * vec4(a_position.xy, a_position.z + sin((a_shift + u_time / 500.) / 2.0) * 0.5, 1.0);
     }
 `;
 
@@ -74,11 +74,11 @@ const cameraMatrix = mat4.create();
 mat4.perspective(cameraMatrix, 45, window.innerWidth / window.innerHeight, 0.1, 1000);
 const lookAtMatrix = mat4.create();
 
-const zoom = 50;
-mat4.lookAt(lookAtMatrix, [-100, 90, 30], [-50, 50, 0], [0, 0, 1]);
+const z = 40;
+mat4.lookAt(lookAtMatrix, [-z, z, z], [0, 0, 0], [0, 0, 1]);
 mat4.mul(cameraMatrix, cameraMatrix, lookAtMatrix);
 
-const k = 40;
+const k = 10;
 const padding = 5;
 const middle = k / 2;
 const cubes = [];
