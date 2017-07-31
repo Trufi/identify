@@ -1,6 +1,6 @@
 import { mat4 } from 'gl-matrix';
 import Cube, { BYTES_PER_VERTEX, VERTICES_PER_CUBE } from './cube';
-var compileShader = WebGLRenderingContext.prototype.compileShader;
+const compileShader = WebGLRenderingContext.prototype.compileShader;
 
 WebGLRenderingContext.prototype.compileShader = function(shader) {
     compileShader.call(this, shader);
@@ -10,7 +10,7 @@ WebGLRenderingContext.prototype.compileShader = function(shader) {
     }
 };
 
-var linkProgram = WebGLRenderingContext.prototype.linkProgram;
+const linkProgram = WebGLRenderingContext.prototype.linkProgram;
 WebGLRenderingContext.prototype.linkProgram = function(program) {
     linkProgram.call(this, program);
 

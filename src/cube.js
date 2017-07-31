@@ -1,7 +1,3 @@
-import { mat4 } from 'gl-matrix';
-
-const key = ({x, y, z}) => `${x}_${y}_${z}`;
-
 export const BYTES_PER_VERTEX = 12 * 4;
 export const VERTICES_PER_CUBE = 36;
 
@@ -72,7 +68,7 @@ export default class Cube {
         ].concat(
             faceColor,
             this.uniqColor,
-            this.shift,
+            this.shift
         );
     }
 }
