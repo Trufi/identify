@@ -2,6 +2,11 @@
   "name": "identify",
   "version": "0.0.0",
   "description": "",
+  "author": {
+    "name": "Mstislav Zhivodkov",
+    "email": "stevemyz@gmail.com",
+    "url": "https://trufi.github.io/"
+  },
   "main": "index.js",
   "dependencies": {
     "gl-matrix": "^2.4.0"
@@ -15,6 +20,5 @@
     "start": "webpack-dev-server"
   },
   "keywords": [],
-  "author": "",
   "license": "MIT"
 }
